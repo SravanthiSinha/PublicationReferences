@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<project name="PublicationReferences" default="jar" basedir=".">
+
+	<property name="pathvisio.dir" value="../.." />
+	<import file="${pathvisio.dir}/plugin-common.xml" />
+
+	<property name="PublicationReferences.lib" value="lib" />
+	<property name="PublicationReferences.images" value="resources" />
+
+	<path id="project.class.path">
+		<fileset dir="${pathvisio.dir}/modules">
+			<include name="org.pathvisio.core.jar" />
+			<include name="org.pathvisio.gui.jar" />
+			<include name="org.pathvisio.desktop.jar" />
+		</fileset>
+		<pathelement location="build" />
+		<fileset dir="${pathvisio.dir}/lib">
+			<include name="**/*.jar" />
+		</fileset>
+
+	</path>
+
+	<path id="exe.bundle">
+		<fileset dir="${pathvisio.dir}/modules">
+			<include name="**/*.jar" />
+		</fileset>
+		<fileset dir="${pathvisio.dir}/lib">
+			<include name="**/*.jar" />
+		</fileset>
+		<fileset dir="lib">
+			<include name="**/*.jar" />
+		</fileset>
+		<pathelement location="${jar.name}" />
+	</path>
+
+
+
+	<path id="test.class.path">
+		<pathelement path="../../lib/junit.jar" />
+		<pathelement path="dist/PublicationReferences.jar" />
+	</path>
+	<target name="webstart" depends="jar">
+		<mkdir dir="webstart" />
+		<copy file="${jar.name}" todir="webstart" />
+		<copy todir="webstart">
+			<fileset dir="${pathvisio.dir}">
+				<include name="pathvisio.jar" />
+			</fileset>
+		</copy>
+		<copy todir="webstart/lib">
+			<fileset dir="lib">
+				<include name="*.jar" />
+			</fileset>
+		</copy>
+		<copy todir="webstart/lib">
+			<fileset dir="${pathvisio.dir}/lib">
+				<include name="**/*.jar" />
+			</fileset>
+		</copy>
+		<signjar alias="**" lazy="true" storepass="********" keystore="path/to/keystore">
+			<fileset dir="webstart" includes="**/*.jar" />
+		</signjar>
+	</target>
+</project>
