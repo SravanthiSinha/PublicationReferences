@@ -124,6 +124,7 @@ public class PublicationReferencePlugin implements Plugin,
 	public void applicationEvent(ApplicationEvent e) {
 		switch (e.getType()) {
 		case PATHWAY_NEW:
+		case PATHWAY_SAVE:
 		case PATHWAY_OPENED:
 			resetUI(false);
 			eng.getActiveVPathway().addVPathwayListener(vpwListener);
