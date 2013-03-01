@@ -94,7 +94,7 @@ public class PReferencesAnalysis {
 
 		eng.getActiveVPathway().redraw();
 
-		rPlugin.mytbm.addRow(new Object[] { "DataNode", "PubMedID", "Source",
+		rPlugin.mytbm.addRow(new Object[] { "DataNode", "PubMedID", "Journal Source",
 				"Authors" });
 		for (int i = 1; i < resource.size(); i++) {
 			rPlugin.mytbm.addRow(new Object[] { resource.get(i).get(0),
