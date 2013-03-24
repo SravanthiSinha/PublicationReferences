@@ -1,30 +1,17 @@
 package org.pathvisio.publicationreferences.plugin;
 
-import java.sql.Ref;
+
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-
-import javax.swing.ImageIcon;
-
 import org.pathvisio.core.Engine;
-import org.pathvisio.core.biopax.BiopaxElementManager;
-import org.pathvisio.core.biopax.reflect.BiopaxElement;
-import org.pathvisio.core.biopax.reflect.PublicationXref;
+import org.pathvisio.core.biopax.PublicationXref;
 
 import org.pathvisio.core.model.ObjectType;
 import org.pathvisio.core.model.Pathway;
 import org.pathvisio.core.model.PathwayElement;
-import org.pathvisio.core.view.GeneProduct;
-import org.pathvisio.core.view.Graphics;
-import org.pathvisio.core.view.VPathway;
-import org.pathvisio.core.view.VPathwayElement;
-import org.pathvisio.gui.SwingEngine;
 
 /**
  * 
@@ -67,6 +54,7 @@ public class PReferencesAnalysis {
 
 					L.add(pel.getAuthorString());
 					L.add(pel.getSource());
+					L.add(pel.getDOI());
 
 					i++;
 					resource.put(i, L);
@@ -94,12 +82,12 @@ public class PReferencesAnalysis {
 
 		eng.getActiveVPathway().redraw();
 
-		rPlugin.mytbm.addRow(new Object[] { "DataNode", "PubMedID", "Journal Source",
-				"Authors" });
+		rPlugin.mytbm.addRow(new Object[] { "DataNode", "PubMedID", "Journal source",
+				"Authors","DOI" });
 		for (int i = 1; i < resource.size(); i++) {
 			rPlugin.mytbm.addRow(new Object[] { resource.get(i).get(0),
 					resource.get(i).get(1), resource.get(i).get(3),
-					resource.get(i).get(2).replace(';', ',') });
+					resource.get(i).get(2).replace(';', ','),resource.get(i).get(4)});
 		}
 		rPlugin.propertyTable.setEnabled(false);
 

@@ -54,7 +54,7 @@ public class PublicationReferencePlugin implements Plugin,
 		
 		if (eng.hasVPathway())
 			eng.getActiveVPathway().addVPathwayListener(vpwListener);
-
+		
 		createPluginUIAndTheirListeners();
 	}
 
@@ -75,6 +75,7 @@ public class PublicationReferencePlugin implements Plugin,
 		mytbm.addColumn("pubchemid");
 		mytbm.addColumn("authors");
 		mytbm.addColumn("Source");
+		mytbm.addColumn("DOI");
 
 		propertyTable.getColumnModel().getColumn(0)
 				.setCellRenderer(new TextAreaRenderer(this));
@@ -84,6 +85,8 @@ public class PublicationReferencePlugin implements Plugin,
 				.setCellRenderer(new TextAreaRenderer(this));
 		propertyTable.getColumnModel().getColumn(3)
 				.setCellRenderer(new TextAreaRenderer(this));
+		propertyTable.getColumnModel().getColumn(4)
+		.setCellRenderer(new TextAreaRenderer(this));
 
 		// create a scrollpane and adding jtable to the pane
 		propertyTable.getColumn("pathwayelemnt").setMaxWidth(60);
