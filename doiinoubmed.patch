@@ -1,0 +1,242 @@
+### Eclipse Workspace Patch 1.0
+
+#P org.pathvisio.core
+
+Index: src/org/pathvisio/core/data/PubMedResult.java
+
+===================================================================
+
+--- src/org/pathvisio/core/data/PubMedResult.java  (revision 3885)
+
++++ src/org/pathvisio/core/data/PubMedResult.java	(working copy)
+
+@@ -29,6 +29,7 @@
+
+ 	private String title;
+ 	private String source;
+ 	private String year;
++	private String doi;
+ 	private List<String> authors = new ArrayList<String>();
+ 
+ 	/**
+@@ -49,7 +50,14 @@
+
+ 	void setSource(String source) {
+ 		this.source = source;
+ 	}
++	public String getDOI() {
++		return doi;
++	}
+ 
++	void setDOI(String doi) {
++		this.doi = doi;
++	}
++
+ 	public String getTitle() {
+ 		return title;
+ 	}
+Index: src/org/pathvisio/core/biopax/PublicationXref.java
+
+===================================================================
+
+--- src/org/pathvisio/core/biopax/PublicationXref.java	(revision 3885)
+
++++ src/org/pathvisio/core/biopax/PublicationXref.java	(working copy)
+
+@@ -38,6 +38,7 @@
+
+ 				PropertyType.SOURCE,
+ 				PropertyType.TITLE,
+ 				PropertyType.YEAR,
++				PropertyType.DOI,
+ 			});
+ 	}
+ 
+@@ -69,7 +70,14 @@
+
+ 	public void setSource(String source) {
+ 		setPropertyValue(PropertyType.SOURCE, source);
+ 	}
++	public String getDOI() {
++		return getPropertyValue(PropertyType.DOI);
++	}
+ 
++	public void setDOI(String doi) {
++		setPropertyValue(PropertyType.DOI, doi);
++	}
++
+ 	public String getYear() {
+ 		return getPropertyValue(PropertyType.YEAR);
+ 	}
+@@ -157,6 +165,7 @@
+
+ 		String authors = getAuthorString();
+ 		String source = getSource();
+ 		String year = getYear();
++		String doi = getDOI();
+ 		if(title != null && title.length() > 0) {
+ 			title += "; ";
+ 		} else {
+@@ -177,12 +186,17 @@
+
+ 		if(year != null && year.length() > 0) {
+ 			year += "; ";
+ 		}
++		if(doi != null && doi.length() > 0) {
++			doi += "; ";
++		}
+ 		if(pmid != null && pmid.length() > 0) {
+ 			pmid = "<A href='" + PUBMED_URL + pmid + "'>" +
+ 				"PubMed" + "</A>";
+ 		} else {
+ 			pmid = "";
+ 		}
+-		return 	title + authors + source + year + pmid;
++		return 	title + authors + source + year + pmid+ doi;
+ 	}
++
++	
+ }
+Index: src/org/pathvisio/core/data/PubMedQuery.java
+
+===================================================================
+
+--- src/org/pathvisio/core/data/PubMedQuery.java	(revision 3885)
+
++++ src/org/pathvisio/core/data/PubMedQuery.java	(working copy)
+
+@@ -115,6 +115,10 @@
+
+ //			System.out.println("Parsed author: " + parsingValue);
+ 			result.addAuthor(parsingValue);
+ 		}
++		else if (DOI.equalsIgnoreCase(parsingName)) {
++//			System.out.println("Parsed author: " + parsingValue);
++			result.setDOI(parsingValue);
++		}
+ 		parsingElement = "";
+ 		parsingName = "";
+ 	}
+@@ -127,6 +131,8 @@
+
+ 	static final String SOURCE = "Source";
+ 	static final String AUTHOR_LIST = "AuthorList";
+ 	static final String AUTHOR = "Author";
++	static final String DOI= "DOI";
++	
+ 
+ 	/*
+ <DocSum>
+Index: src/org/pathvisio/core/biopax/PropertyType.java
+
+===================================================================
+
+--- src/org/pathvisio/core/biopax/PropertyType.java	(revision 3885)
+
++++ src/org/pathvisio/core/biopax/PropertyType.java	(working copy)
+
+@@ -30,6 +30,7 @@
+
+ 	ID("http://www.w3.org/2001/XMLSchema#string", 1),
+ 	DB("http://www.w3.org/2001/XMLSchema#string", 1),
+ 	SOURCE("http://www.w3.org/2001/XMLSchema#string", 1),
++	DOI("http://www.w3.org/2001/XMLSchema#string", 1)
+ 	;
+ 
+ 	String datatype;
+#P org.pathvisio.gui
+
+Index: src/org/pathvisio/gui/dialogs/PublicationXRefDialog.java
+
+===================================================================
+
+--- src/org/pathvisio/gui/dialogs/PublicationXRefDialog.java	(revision 3885)
+
++++ src/org/pathvisio/gui/dialogs/PublicationXRefDialog.java	(working copy)
+
+@@ -62,6 +62,7 @@
+
+ 	final static String TITLE = "Title";
+ 	final static String SOURCE = "Source";
+ 	final static String YEAR = "Year";
++	final static String DOI="DOI";
+ 	final static String AUTHORS = "Authors (separate with " + PublicationXref.AUTHOR_SEP + ")";
+ 	final static String QUERY = "Query PubMed";
+ 
+@@ -71,6 +72,7 @@
+
+ 	JTextField source;
+ 	JTextField year;
+ 	JTextPane authors;
++	JTextField doi;
+ 
+ 	public PublicationXRefDialog(PublicationXref xref, Frame frame, Component locationComp, boolean cancellable) {
+ 		super(frame, "Literature reference properties", locationComp, true, cancellable);
+@@ -96,6 +98,7 @@
+
+ 		setText(input.getSource(), source);
+ 		setText(input.getYear(), year);
+ 		setText(input.getAuthorString(), authors);
++		setText(input.getDOI(), doi);
+ 	}
+ 
+ 	protected void okPressed() {
+@@ -104,6 +107,7 @@
+
+ 		input.setSource(source.getText());
+ 		input.setYear(year.getText());
+ 		input.setAuthors(authors.getText());
++		input.setDOI(doi.getText());
+ 		super.okPressed();
+ 	}
+ 
+@@ -134,6 +138,7 @@
+
+ 			year.setText(pmr.getYear());
+ 			source.setText(pmr.getSource());
+ 			authors.setText(PublicationXref.createAuthorString(pmr.getAuthors()));
++			doi.setText(pmr.getDOI());
+ 		}
+ 	}
+ 
+@@ -153,11 +158,13 @@
+
+ 		JLabel lblSource = new JLabel(SOURCE);
+ 		JLabel lblYear = new JLabel(YEAR);
+ 		JLabel lblAuthors = new JLabel(AUTHORS);
++		JLabel lblDoi = new JLabel(DOI);
+ 
+ 		pmId = new JTextField();
+ 		title = new JTextField();
+ 		source = new JTextField();
+ 		year = new JTextField();
++		doi= new JTextField();
+ 		final DefaultStyledDocument doc = new DefaultStyledDocument();
+ 		doc.setDocumentFilter(new DocumentFilter() {
+ 			public void insertString(FilterBypass fb, int offset, String string, AttributeSet attr) throws BadLocationException {
+@@ -205,7 +212,9 @@
+
+ 		contents.add(lblTitle, c);
+ 		contents.add(lblYear, c);
+ 		contents.add(lblSource, c);
++		contents.add(lblDoi, c);
+ 		contents.add(lblAuthors, c);
++		
+ 
+ 		c.gridx = 1;
+ 		c.fill = GridBagConstraints.HORIZONTAL;
+@@ -214,10 +223,12 @@
+
+ 		contents.add(title, c);
+ 		contents.add(year, c);
+ 		contents.add(source, c);
++		contents.add(doi,c);
+ 		c.fill = GridBagConstraints.BOTH;
+ 		c.weighty = 1;
+ 		contents.add(new JScrollPane(authors), c);
+-
++		
++		
+ 		c.gridx = 2;
+ 		c.fill = GridBagConstraints.NONE;
+ 		contents.add(query);
