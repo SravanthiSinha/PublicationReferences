@@ -33,7 +33,9 @@
 		<pathelement location="${jar.name}" />
 	</path>
 
-
+	<path id="embed.jars">
+			
+				</path>
 
 	<path id="test.class.path">
 		<pathelement path="../../lib/junit.jar" />
